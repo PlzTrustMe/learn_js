@@ -1,71 +1,56 @@
-const todoInput = document.getElementById('todo'); // Поле ввода
-const addTodoBtn = document.getElementById('add-todo'); // Кнопка + 
+const addTaskBtn = document.getElementById('add-task')
+const todoBlock = document.getElementById('todo-block');
+const deleteAllBtn = document.getElementById('delete-all');
 
-const todoList = [] // Список тудушек
+const renderNewTask = (task) => {
+    const liElem = document.createElement('li');
 
-const clearTodoInput = () => {
-    // Очищает поле ввода 
+    liElem.className = 'list-group-item d-flex justify-content-around';
+    liElem.textContent = task;
 
-    todoInput.value = ''
-};
+    const delBtn = document.createElement('button');
 
-const deleteTodo = (todoId) => {
-    let todoIndex = 0;
+    delBtn.className = 'btn btn-dark p-3';
+    delBtn.textContent = 'Delete';
 
-    for (const todo of todoList) {
-        if (todo.id === todoId) {
-            break;
+    const successBtn = document.createElement('button');
+
+    successBtn.className = 'btn btn-success p-3';
+    successBtn.textContent = 'Success';
+
+    liElem.appendChild(delBtn);
+    liElem.appendChild(successBtn);
+    todoBlock.appendChild(liElem);
+
+    delBtn.addEventListener('click', () => {
+        todoBlock.removeChild(liElem);
+    });
+
+    successBtn.addEventListener('click', () => {
+        liElem.classList.toggle('active');
+
+        if(successBtn.textContent === 'Success') {
+            successBtn.textContent = 'Unsuccess';
+        } else {
+            successBtn.textContent = 'Success';
         }
-        todoIndex++;
-    }
+    });
+}
 
-    console.log(todoIndex);
-    todoList.splice(todoIndex, 1);
-
-    const todoBlock = document.getElementById('todo-block');
-    todoBlock.children[todoIndex].remove();
-};
-
-const successTodo = (todoId) => {};
-
-const renderNewTodoElem = (id, task) => {
-    const newTodoElem = document.createElement('li');
+addTaskBtn.addEventListener('click', () => {
+    const userTaskInput = document.getElementById('todo-input');
     
-    newTodoElem.className = 'list-group-item d-flex justify-content-around'
-    newTodoElem.innerHTML = `
-        <p>${task}</p>
-        <button type="button" class="btn btn-dark p-3" id='delete-btn'>Delete</button>
-        <button type="button" class="btn btn-success p-3" id='success-btn'>Success</button>
-    `;
-
-    const todoBlock = document.getElementById('todo-block');
-    todoBlock.appendChild(newTodoElem);
-
-    const deleteBtn = document.getElementById('delete-btn')
-    const successBtn = document.getElementById('success-btn')
-
-    deleteBtn.addEventListener('click', deleteTodo.bind(null, id));
-    successBtn.addEventListener('click', successTodo.bind(null, id));
-
-};
-
-const addTodoHandler = () => {
-    const task = todoInput.value;
-
-    if (task.trim() === '') {
-        alert('Для начала введите задачу!')
-        return
+    if(userTaskInput.value.trim() === '') {
+        alert('Для начала введите текст в поле!');
+        return;
     };
 
-    const newTodoObj = {
-        id: Math.random().toString(),
-        task: task
+    renderNewTask(userTaskInput.value);
+    userTaskInput.value = '';
+});
+
+deleteAllBtn.addEventListener('click', () => {
+    while (todoBlock.firstChild) {
+        todoBlock.removeChild(todoBlock.firstChild)
     };
-
-    todoList.push(newTodoObj);
-    
-    renderNewTodoElem(newTodoObj.id, newTodoObj.task);
-    clearTodoInput();
-};
-
-addTodoBtn.addEventListener('click', addTodoHandler);
+});
